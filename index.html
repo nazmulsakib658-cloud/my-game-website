@@ -3,50 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>গেমিং পোর্টাল</title>
+    <title>Gaming Portal</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 20px; background: #f4f4f4; }
-        .container { background: white; padding: 20px; border-radius: 10px; max-width: 400px; margin: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        button { padding: 10px 15px; margin: 5px; cursor: pointer; background: #28a745; color: white; border: none; border-radius: 5px; width: 90%; }
-        .game-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-        .game-card { border: 1px solid #ddd; padding: 10px; border-radius: 8px; background: #fff; }
-        .wallet-actions { margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding-bottom: 70px; }
+        .header { background: #e91e63; color: white; padding: 15px; text-align: center; }
+        .balance-card { background: white; margin: 15px; padding: 20px; border-radius: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .grid-menu { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; padding: 15px; }
+        .menu-item { background: white; padding: 15px; text-align: center; border-radius: 8px; cursor: pointer; font-size: 14px; }
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #ddd; }
+        button { background: #e91e63; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin: 5px; }
+        #auth-container { padding: 40px; text-align: center; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>গেমিং পোর্টাল</h1>
+<div id="auth-container">
+    <h2>Login to Portal</h2>
+    <input type="email" id="email" placeholder="Email"><br>
+    <input type="password" id="password" placeholder="Password"><br>
+    <button onclick="logIn()">Login</button>
+</div>
 
-    <div id="auth-container">
-        <input type="email" id="email" placeholder="ইমেইল" style="padding:10px; width:80%; margin:5px;"><br>
-        <input type="password" id="password" placeholder="পাসওয়ার্ড" style="padding:10px; width:80%; margin:5px;"><br>
-        <button onclick="signUp()">সাইনআপ</button>
-        <button onclick="logIn()">লগইন</button>
+<div id="main-content" style="display:none;">
+    <div class="header"><h3>Gaming Portal</h3></div>
+    <div class="balance-card">
+        <p>Total Balance</p>
+        <h2 id="display-balance">৳ 0.00</h2>
+        <button onclick="handleTransaction('Deposit')">Deposit</button>
+        <button onclick="handleTransaction('Withdraw')">Withdraw</button>
     </div>
 
-    <div id="profile-section" style="display:none;">
-        <div id="profile-info"></div>
-        <div class="wallet-actions">
-            <button onclick="handleTransaction('ডিপোজিট')">ডিপোজিট</button>
-            <button onclick="handleTransaction('উইথড্র')">উইথড্র</button>
-        </div>
-        <button onclick="logOut()" style="background:#dc3545;">লগআউট</button>
+    <div class="grid-menu">
+        <div class="menu-item" onclick="playGame('Slots')">🎰 Slots</div>
+        <div class="menu-item" onclick="playGame('Fishing')">🦈 Fishing</div>
+        <div class="menu-item" onclick="playGame('Sports')">⚽ Sports</div>
+    </div>
 
-        <div class="game-grid">
-            <div class="game-card">
-                <p>Super Ace</p>
-                <button onclick="playGame('Super Ace')">Play</button>
-            </div>
-            <div class="game-card">
-                <p>Fortune Gems</p>
-                <button onclick="playGame('Fortune Gems')">Play</button>
-            </div>
-        </div>
+    <div class="nav-bar">
+        <div>🏠 Home</div>
+        <div>📊 Activity</div>
+        <div onclick="logOut()">👤 Logout</div>
     </div>
 </div>
 
@@ -59,32 +59,21 @@
         messagingSenderId: "201479161493",
         appId: "1:201479161493:web:257e6c0d130390f7033d9c"
     };
-
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    function signUp() { auth.createUserWithEmailAndPassword(document.getElementById('email').value, document.getElementById('password').value).catch(e => alert(e.message)); }
     function logIn() { auth.signInWithEmailAndPassword(document.getElementById('email').value, document.getElementById('password').value).catch(e => alert(e.message)); }
     function logOut() { auth.signOut().then(() => location.reload()); }
-
-    function handleTransaction(type) {
-        let amount = prompt(type + " করতে কত টাকা চান?");
-        if (amount) alert(type + " রিকোয়েস্ট পাঠানো হয়েছে: " + amount + " টাকা। এডমিন শীঘ্রই আপনার সাথে যোগাযোগ করবেন।");
-    }
-
-    function playGame(name) {
-        alert(name + " গেমটি এখন লোড হচ্ছে...");
-    }
+    function handleTransaction(type) { prompt(type + " Amount:"); }
+    function playGame(name) { alert("Loading " + name + "..."); }
 
     auth.onAuthStateChanged((user) => {
         if (user) {
             document.getElementById("auth-container").style.display = "none";
-            document.getElementById("profile-section").style.display = "block";
+            document.getElementById("main-content").style.display = "block";
             db.collection("users").doc(user.uid).get().then((doc) => {
-                if (doc.exists) {
-                    document.getElementById("profile-info").innerHTML = `ইমেইল: ${user.email} <br> <b>ব্যালেন্স: ${doc.data().balance} TK</b>`;
-                }
+                if (doc.exists) document.getElementById("display-balance").innerText = "৳ " + doc.data().balance;
             });
         }
     });
