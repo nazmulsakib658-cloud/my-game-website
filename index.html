@@ -2,52 +2,45 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>আমার গেমিং পোর্টাল</title>
-
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-
+    <title>গেমিং পোর্টাল</title>
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 20px; background-color: #f4f4f4; }
-        .container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        input { padding: 10px; margin: 5px; width: 80%; }
-        button { padding: 10px 20px; margin: 10px; cursor: pointer; background: #28a745; color: white; border: none; border-radius: 5px; }
-        #profile-section { display: none; margin-top: 20px; }
+        body { font-family: sans-serif; text-align: center; padding: 20px; }
         .game-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-        .game-card { border: 1px solid #ddd; padding: 10px; border-radius: 8px; background: #fff; }
+        .game-card { border: 1px solid #ccc; padding: 10px; border-radius: 8px; }
+        button { padding: 10px; margin: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>আমার গেমিং পোর্টাল</h1>
+    <h1>আমার গেমিং পোর্টাল</h1>
 
-        <div id="auth-container">
-            <input type="email" id="email" placeholder="ইমেইল"><br>
-            <input type="password" id="password" placeholder="পাসওয়ার্ড"><br>
-            <button onclick="signUp()">সাইনআপ</button>
-            <button onclick="logIn()">লগইন</button>
-        </div>
+    <div id="auth-container">
+        <input type="email" id="email" placeholder="ইমেইল"><br>
+        <input type="password" id="password" placeholder="পাসওয়ার্ড"><br>
+        <button onclick="signUp()">সাইনআপ</button>
+        <button onclick="logIn()">লগইন</button>
+    </div>
 
-        <div id="profile-section">
-            <div id="profile-info"></div>
-            <button onclick="saveScore()">ব্যালেন্স আপডেট</button>
-            <button onclick="logOut()">লগআউট</button>
+    <div id="profile-section" style="display:none;">
+        <div id="profile-info"></div>
+        <button onclick="saveScore()">ব্যালেন্স আপডেট (+10)</button>
+        <button onclick="logOut()">লগআউট</button>
 
-            <div class="game-grid">
-                <div class="game-card">
-                    <p>Super Ace</p>
-                    <button onclick="playGame('Super Ace')">Play</button>
-                </div>
-                <div class="game-card">
-                    <p>Fortune Gems</p>
-                    <button onclick="playGame('Fortune Gems')">Play</button>
-                </div>
+        <div class="game-grid">
+            <div class="game-card">
+                <p>Super Ace</p>
+                <button onclick="playGame('Super Ace')">Play</button>
+            </div>
+            <div class="game-card">
+                <p>Fortune Gems</p>
+                <button onclick="playGame('Fortune Gems')">Play</button>
             </div>
         </div>
     </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 
     <script>
         const firebaseConfig = {
@@ -58,46 +51,22 @@
             messagingSenderId: "201479161493",
             appId: "1:201479161493:web:257e6c0d130390f7033d9c"
         };
-
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // লগইন ও সাইনআপ ফাংশন
-        function signUp() {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            auth.createUserWithEmailAndPassword(email, pass).catch(e => alert(e.message));
-        }
-
-        function logIn() {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            auth.signInWithEmailAndPassword(email, pass).catch(e => alert(e.message));
-        }
-
+        function signUp() { auth.createUserWithEmailAndPassword(document.getElementById('email').value, document.getElementById('password').value).catch(e => alert(e.message)); }
+        function logIn() { auth.signInWithEmailAndPassword(document.getElementById('email').value, document.getElementById('password').value).catch(e => alert(e.message)); }
         function logOut() { auth.signOut().then(() => location.reload()); }
+        function saveScore() { auth.currentUser && db.collection("users").doc(auth.currentUser.uid).update({ balance: firebase.firestore.FieldValue.increment(10) }).then(() => location.reload()); }
+        function playGame(name) { alert(name + " চালু হচ্ছে..."); }
 
-        function saveScore() {
-            const user = auth.currentUser;
-            if(user) {
-                db.collection("users").doc(user.uid).update({
-                    balance: firebase.firestore.FieldValue.increment(10)
-                }).then(() => location.reload());
-            }
-        }
-
-        function playGame(name) { alert(name + " গেমটি চালু হচ্ছে..."); }
-
-        // ইউজার লগইন চেক
         auth.onAuthStateChanged((user) => {
             if (user) {
                 document.getElementById("auth-container").style.display = "none";
                 document.getElementById("profile-section").style.display = "block";
                 db.collection("users").doc(user.uid).get().then((doc) => {
-                    if (doc.exists) {
-                        document.getElementById("profile-info").innerHTML = `ইমেইল: ${user.email} <br> <b>ব্যালেন্স: ${doc.data().balance} TK</b>`;
-                    }
+                    if (doc.exists) document.getElementById("profile-info").innerHTML = `ইমেইল: ${user.email} <br> <b>ব্যালেন্স: ${doc.data().balance} TK</b>`;
                 });
             }
         });
