@@ -89,7 +89,7 @@
             .then(() => alert("লগইন সফল!"))
             .catch(e => alert("এরর: " + e.message));
     }
-</script>// User log-in korar por tar profile info fetch korar function
+</script>  //User log-in korar por tar profile info fetch korar function
 function loadUserProfile(userId) {
     db.collection("users").doc(userId).get().then((doc) => {
         if (doc.exists) {
