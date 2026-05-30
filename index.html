@@ -3,41 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <title>আমার গেমিং পোর্টাল</title>
-    <style>
-        body { font-family: sans-serif; background-color: #222; color: white; text-align: center; padding: 50px; }
-        .game-box { border: 2px solid #fff; padding: 20px; display: inline-block; border-radius: 10px; }
-        button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
-    </style>
 </head>
 <body>
     <h1>আমার গেমিং পোর্টাল</h1>
-    <div class="game-box">
-        <p>এখানে আপনার গেমটি খেলুন!</p>
-        <button onclick="startGame()">গেমটি শুরু করুন</button>
-    </div>
+    <button onclick="saveScore()">স্কোর সেভ করুন</button>
 
     <script>
-        function startGame() {
-            alert("গেম শুরু হয়েছে! এখন ডাটাবেসে স্কোর পাঠানোর চেষ্টা করা হচ্ছে...");
-            
-            // এটি আপনার সার্ভারের /save-score রুটে রিকোয়েস্ট পাঠাবে
-            fetch('/save-score')
-                .then(response => response.text())
-                .then(data => alert(data))
-                .catch(err => alert("এরর হয়েছে: " + err));
-        }
-    </script>function startGame() {
-        alert("ডাটাবেসে স্কোর পাঠানোর চেষ্টা করা হচ্ছে...");
-        
-        fetch('/save-score')
-            .then(response => response.text())
-            .then(data => {
-                alert("সার্ভার থেকে মেসেজ: " + data);
-            })
-            .catch(err => {
-                alert("এরর: সার্ভারের সাথে যোগাযোগ করা যাচ্ছে না। বিস্তারিত: " + err);
+        async function saveScore() {
+            const url = "https://data.mongodb-api.com/app/YOUR_APP_ID/endpoint/data/v1/action/insertOne";
+            const apiKey = "YOUR_API_KEY";
+
+            const response = await fetch(url, {
+                method: "POST",
+                headers: { "api-key": apiKey, "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    dataSource: "Cluster0",
+                    database: "game_db",
+                    collection: "scores",
+                    document: { score: 100, date: new Date() }
+                })
             });
-    }
-</script>
+            
+            alert("স্কোর পাঠানো হয়েছে!");
+        }
+    </script>
 </body>
 </html>
