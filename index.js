@@ -1,21 +1,12 @@
-// আপনার index.js ফাইলের শুরুতে এই লাইনটি দিন
-app.use(express.static(__dirname)); express = require('express');
-const { MongoClient } = require('mongodb');
+const express = require('express');
 const app = express();
-const uri = process.env.MONGODB_URI;
+const path = require('path');
 
-app.use(express.static(__dirname)); // আপনার HTML ফাইলটি দেখানোর জন্য
+app.use(express.static(__dirname));
 
-app.get('/save-score', async (req, res) => {
-    const client = new MongoClient(uri);
-    try {
-        await client.connect();
-        const db = client.db('game_db'); // আপনার ডাটাবেস নাম
-        await db.collection('scores').insertOne({ score: 100, date: new Date() });
-        res.send("স্কোর সফলভাবে ডাটাবেসে সেভ হয়েছে!");
-    } catch (e) {
-        res.send("এরর: " + e.message);
-    }
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.listen(3000, () => console.log('সার্ভার চালু হয়েছে'));
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log(`Server running on port ${port}`));
