@@ -1,13 +1,16 @@
-const { MongoClient } = require('mongodb');
-const uri = process.env.MONGODB_URI; // এখানে Vercel-এর ভেরিয়েবলটি ব্যবহার হচ্ছে
+const express = require('express');
+const mongoose = require('mongoose');
+const app = express();
 
-async function connectToDatabase() {
-    const client = new MongoClient(uri);
-    try {
-        await client.connect();
-        console.log("MongoDB-te successfull-i connect hoyeche!");
-    } catch (e) {
-        console.error(e);
-    }
-}
-connectToDatabase();
+// MongoDB URI Vercel থেকে নেওয়া হবে
+const uri = process.env.MONGODB_URI;
+
+mongoose.connect(uri)
+  .then(() => console.log("MongoDB সফলভাবে কানেক্ট হয়েছে!"))
+  .catch(err => console.error("কানেকশন এরর:", err));
+
+app.get('/', (req, res) => {
+    res.send('সার্ভার চলছে এবং ডাটাবেস কানেক্ট হয়েছে!');
+});
+
+app.listen(3000, () => console.log('পোর্ট ৩০০০ এ সার্ভার চালু হয়েছে'));
