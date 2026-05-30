@@ -11,7 +11,7 @@
 
     <style>
         body { font-family: sans-serif; text-align: center; padding: 20px; }
-        button { padding: 10px 20px; margin: 10px; cursor: pointer; }
+        button { padding: 10px 20px; margin: 10px; cursor: pointer; background: #28a745; color: white; border: none; border-radius: 5px; }
         #profile-section { margin-top: 20px; border: 1px solid #ccc; padding: 20px; display: none; }
     </style>
 </head>
@@ -30,7 +30,7 @@
     <div id="profile-section">
         <h3>আপনার প্রোফাইল</h3>
         <div id="profile-info"></div>
-        <button onclick="saveScore()">স্কোর সেভ করুন</button>
+        <button onclick="saveScore()">স্কোর সেভ করুন (+10)</button>
         <button onclick="logOut()">লগআউট</button>
     </div>
 
@@ -39,49 +39,48 @@
             apiKey: "AIzaSyAmmkzOVL03j4G-R1sU-Rs-zVXFHvSRvz8",
             authDomain: "my-new-project-39095.firebaseapp.com",
             projectId: "my-new-project-39095",
-            storageBucket: ""my-new-project-39095.firebasestorage.app",
+            storageBucket: "my-new-project-39095.firebasestorage.app",
             messagingSenderId: "201479161493",
-            appId: "1:201479161493:web:257e6c0d130390f7033d9c",
+            appId: "1:201479161493:web:257e6c0d130390f7033d9c"
         };
 
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // সাইনআপ
         function signUp() {
             const email = document.getElementById('email').value;
             const pass = document.getElementById('password').value;
             auth.createUserWithEmailAndPassword(email, pass)
-                .then(() => alert("সাইনআপ সফল!"))
                 .catch(e => alert("এরর: " + e.message));
         }
 
-        // লগইন
         function logIn() {
             const email = document.getElementById('email').value;
             const pass = document.getElementById('password').value;
             auth.signInWithEmailAndPassword(email, pass)
-                .then(() => alert("লগইন সফল!"))
                 .catch(e => alert("এরর: " + e.message));
         }
 
-        // লগআউট
         function logOut() {
             auth.signOut().then(() => location.reload());
         }
 
-        // স্কোর সেভ
         function saveScore() {
             const user = auth.currentUser;
             if(user) {
                 db.collection("users").doc(user.uid).update({
-                    balance: firebase.firestore.FieldValue.increment(10) // ১০ পয়েন্ট যোগ হবে
-                }).then(() => alert("স্কোর সেভ হয়েছে!"));
+                    balance: firebase.firestore.FieldValue.increment(10)
+                }).then(() => {
+                    alert("স্কোর সেভ হয়েছে!");
+                    location.reload(); // ব্যালেন্স আপডেট দেখানোর জন্য রিলোড
+                }).catch(() => {
+                    // যদি ডকুমেন্ট না থাকে, তবে নতুন করে তৈরি করবে
+                    db.collection("users").doc(user.uid).set({ email: user.email, balance: 10 });
+                });
             }
         }
 
-        // ইউজার চেক
         auth.onAuthStateChanged((user) => {
             if (user) {
                 document.getElementById("auth-container").style.display = "none";
