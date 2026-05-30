@@ -1,19 +1,22 @@
 const express = require('express');
 const { MongoClient } = require('mongodb');
 const app = express();
+const path = require('path');
 
-// ডাটাবেসের লিঙ্ক (এটি আপনার Vercel Environment Variable থেকে আসবে)
+// MongoDB কানেকশন
 const uri = process.env.MONGODB_URI;
 
 app.use(express.static(__dirname));
 
-// স্কোর সেভ করার জন্য API রুট
+// হোম পেজ
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// স্কোর সেভ করার API
 app.get('/save-score', async (req, res) => {
-    if (!uri) {
-        return res.send("এরর: ডাটাবেস কানেকশন লিঙ্ক নেই!");
-    }
-    const client = new MongoClient(uri);
     try {
+        const client = new MongoClient(uri);
         await client.connect();
         const db = client.db('game_db');
         await db.collection('scores').insertOne({ score: 100, date: new Date() });
@@ -24,4 +27,4 @@ app.get('/save-score', async (req, res) => {
 });
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log('সার্ভার চলছে...'));
+app.listen(port, () => console.log('Server is running'));
