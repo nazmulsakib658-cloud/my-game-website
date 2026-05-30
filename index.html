@@ -18,6 +18,25 @@
     .game-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
     .game-card { background: #f8f9fa; padding: 10px; border-radius: 8px; border: 1px solid #ddd; }
     .game-card img { width: 100%; border-radius: 5px; }
+<style>
+    .game-gri {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* মোবাইলের জন্য ২টি কলাম */
+        gap: 15px;
+        padding: 10px;
+    }
+    .game-card {
+        background: #fff;
+        padding: 10px;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .game-card img {
+        width: 100%;
+        height: 100px; /* নির্দিষ্ট উচ্চতা */
+        object-fit: cover;
+        border-radius: 8px;
+    }
 </style>
 
 </head>
