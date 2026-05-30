@@ -1,234 +1,82 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>গেমিং পোর্টাল</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HGNICE Gaming Portal</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-
-<style>
-body{
-font-family:sans-serif;
-background:#f4f4f4;
-text-align:center;
-padding:20px;
-}
-
-.container{
-max-width:400px;
-margin:auto;
-background:white;
-padding:20px;
-border-radius:10px;
-box-shadow:0 0 10px rgba(0,0,0,.1);
-}
-
-input{
-width:90%;
-padding:10px;
-margin:5px;
-}
-
-button{
-width:90%;
-padding:10px;
-margin:5px;
-border:none;
-border-radius:5px;
-cursor:pointer;
-background:#28a745;
-color:white;
-}
-
-.logout{
-background:#dc3545;
-}
-
-.game-card{
-border:1px solid #ddd;
-border-radius:8px;
-padding:10px;
-background:#fff;
-margin-top:20px;
-}
-</style>
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding-bottom: 80px; }
+        .header { background: #e91e63; color: white; padding: 15px; text-align: center; }
+        .balance-card { background: white; margin: 15px; padding: 20px; border-radius: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .grid-menu { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; padding: 15px; }
+        .menu-item { background: white; padding: 15px; text-align: center; border-radius: 8px; cursor: pointer; font-size: 13px; }
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #ddd; }
+        button { background: #e91e63; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin: 5px; }
+        #auth-container { padding: 40px; text-align: center; }
+    </style>
 </head>
 <body>
 
-<div class="container">
-
-<h1>আমার গেমিং পোর্টাল</h1>
-
 <div id="auth-container">
-
-<input type="email" id="email" placeholder="ইমেইল">
-
-<input type="password" id="password" placeholder="পাসওয়ার্ড">
-
-<button onclick="signUp()">সাইনআপ</button>
-
-<button onclick="logIn()">লগইন</button>
-
+    <h2>লগইন করুন</h2>
+    <input type="email" id="email" placeholder="ইমেইল"><br>
+    <input type="password" id="password" placeholder="পাসওয়ার্ড"><br><br>
+    <button onclick="logIn()">লগইন</button>
 </div>
 
-<div id="profile-section" style="display:none;">
+<div id="main-content" style="display:none;">
+    <div class="header"><h3>HGNICE পোর্টাল</h3></div>
+    <div class="balance-card">
+        <p>ব্যালেন্স</p>
+        <h2 id="display-balance">৳ 0.00</h2>
+        <button onclick="handleTransaction('ডিপোজিট')">ডিপোজিট</button>
+        <button onclick="handleTransaction('উইথড্র')">উইথড্র</button>
+    </div>
 
-<div id="profile-info"></div>
+    <div class="grid-menu">
+        <div class="menu-item" onclick="playGame('Slots')">🎰 Slots</div>
+        <div class="menu-item" onclick="playGame('Fishing')">🦈 Fishing</div>
+        <div class="menu-item" onclick="playGame('Sports')">⚽ Sports</div>
+    </div>
 
-<button onclick="saveScore()">স্কোর সেভ (+10)</button>
-
-<button class="logout" onclick="logOut()">লগআউট</button>
-
-<div class="game-card">
-<h3>Fortune Gems</h3>
-<button onclick="playGame()">Play</button>
-</div>
-
-</div>
-
+    <div class="nav-bar">
+        <div>🏠 হোম</div>
+        <div>📊 অ্যাক্টিভিটি</div>
+        <div onclick="logOut()">👤 লগআউট</div>
+    </div>
 </div>
 
 <script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyAmmkzOVL03j4G-R1sU-Rs-zVXFHvSRvz8",
+        authDomain: "my-new-project-39095.firebaseapp.com",
+        projectId: "my-new-project-39095",
+        storageBucket: "my-new-project-39095.firebasestorage.app",
+        messagingSenderId: "201479161493",
+        appId: "1:201479161493:web:257e6c0d130390f7033d9c"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-const firebaseConfig = {
-apiKey: "AIzaSyAmmkzOVL03j4G-R1sU-Rs-zVXFHvSRvz8",
-authDomain: "my-new-project-39095.firebaseapp.com",
-projectId: "my-new-project-39095",
-storageBucket: "my-new-project-39095.firebasestorage.app",
-messagingSenderId: "201479161493",
-appId: "1:201479161493:web:257e6c0d130390f7033d9c"
-};
+    function logIn() { auth.signInWithEmailAndPassword(document.getElementById('email').value, document.getElementById('password').value).catch(e => alert(e.message)); }
+    function logOut() { auth.signOut().then(() => location.reload()); }
+    function handleTransaction(type) { prompt(type + " অ্যামাউন্ট লিখুন:"); }
+    function playGame(name) { alert(name + " গেমটি লোড হচ্ছে..."); }
 
-firebase.initializeApp(firebaseConfig);
-
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-function signUp(){
-
-const email=document.getElementById("email").value;
-const password=document.getElementById("password").value;
-
-auth.createUserWithEmailAndPassword(email,password)
-
-.then((cred)=>{
-
-return db.collection("users")
-.doc(cred.user.uid)
-.set({
-email:email,
-balance:0
-});
-
-})
-
-.then(()=>{
-alert("সাইনআপ সফল!");
-})
-
-.catch((e)=>{
-alert(e.message);
-});
-}
-
-function logIn(){
-
-const email=document.getElementById("email").value;
-const password=document.getElementById("password").value;
-
-auth.signInWithEmailAndPassword(email,password)
-
-.then(()=>{
-alert("লগইন সফল!");
-})
-
-.catch((e)=>{
-alert(e.message);
-});
-}
-
-function logOut(){
-
-auth.signOut().then(()=>{
-location.reload();
-});
-
-}
-
-function saveScore(){
-
-const user=auth.currentUser;
-
-if(!user){
-alert("আগে লগইন করুন");
-return;
-}
-
-db.collection("users")
-.doc(user.uid)
-.update({
-balance: firebase.firestore.FieldValue.increment(10)
-})
-
-.then(()=>{
-alert("+10 পয়েন্ট যোগ হয়েছে");
-loadProfile(user);
-})
-
-.catch((e)=>{
-alert(e.message);
-});
-}
-
-function playGame(){
-alert("Fortune Gems এখনও যুক্ত করা হয়নি");
-}
-
-function loadProfile(user){
-
-db.collection("users")
-.doc(user.uid)
-.get()
-
-.then((doc)=>{
-
-if(doc.exists){
-
-document.getElementById("profile-info").innerHTML=
-`
-<h3>আপনার প্রোফাইল</h3>
-<p>ইমেইল: ${user.email}</p>
-<h2>ব্যালেন্স: ${doc.data().balance} TK</h2>
-`;
-
-}
-
-});
-
-}
-
-auth.onAuthStateChanged((user)=>{
-
-if(user){
-
-document.getElementById("auth-container").style.display="none";
-document.getElementById("profile-section").style.display="block";
-
-loadProfile(user);
-
-}else{
-
-document.getElementById("auth-container").style.display="block";
-document.getElementById("profile-section").style.display="none";
-
-}
-
-});
-
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            document.getElementById("auth-container").style.display = "none";
+            document.getElementById("main-content").style.display = "block";
+            db.collection("users").doc(user.uid).get().then((doc) => {
+                if (doc.exists) document.getElementById("display-balance").innerText = "৳ " + doc.data().balance;
+            });
+        }
+    });
 </script>
-
 </body>
 </html>
