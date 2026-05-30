@@ -12,53 +12,84 @@
         body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding-bottom: 80px; }
         .header { background: #e91e63; color: white; padding: 15px; text-align: center; }
         .balance-card { background: white; margin: 15px; padding: 20px; border-radius: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .payment-box { margin-top: 15px; }
-        select, input { padding: 8px; width: 80%; margin: 5px; }
-        button { background: #e91e63; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; padding: 15px; }
+        .menu-card { background: white; padding: 15px; text-align: center; border-radius: 8px; cursor: pointer; }
         .nav-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #ddd; }
+        button { background: #e91e63; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px; }
+        input, select { padding: 10px; width: 85%; margin: 5px; border-radius: 5px; border: 1px solid #ccc; }
+        #auth-container { padding: 40px; text-align: center; }
     </style>
 </head>
 <body>
 
-<div class="header"><h3>HGNICE পোর্টাল</h3></div>
+<div id="auth-container">
+    <h2>লগইন করুন</h2>
+    <input type="email" id="email" placeholder="ইমেইল"><br>
+    <input type="password" id="password" placeholder="পাসওয়ার্ড"><br>
+    <button onclick="logIn()">লগইন</button>
+</div>
 
-<div class="balance-card">
-    <p>ব্যালেন্স</p>
-    <h2>৳ <span id="display-balance">40</span></h2>
-    
-    <div class="payment-box">
-        <h4>পেমেন্ট মেথড নির্বাচন করুন</h4>
+<div id="main-content" style="display:none;">
+    <div class="header"><h3>HGNICE পোর্টাল</h3></div>
+    <div class="balance-card">
+        <p>ব্যালেন্স</p>
+        <h2 id="display-balance">৳ 0</h2>
+        
         <select id="method">
             <option value="bKash">বিকাশ (bKash)</option>
             <option value="Nagad">নগদ (Nagad)</option>
             <option value="USDT">USDT (TRC20)</option>
-        </select><br>
-        <input type="number" id="amount" placeholder="পরিমাণ লিখুন (টাকা/USDT)">
+        </select>
+        <input type="number" id="amount" placeholder="পরিমাণ লিখুন">
         <br>
-        <button onclick="processTransaction('Deposit')">ডিপোজিট</button>
-        <button onclick="processTransaction('Withdraw')" style="background:#555;">উইথড্র</button>
+        <button onclick="processTransaction('ডিপোজিট')">ডিপোজিট</button>
+        <button onclick="processTransaction('উইথড্র')" style="background:#555;">উইথড্র</button>
+    </div>
+
+    <div class="menu-grid">
+        <div class="menu-card" onclick="alert('Slots গেম লোড হচ্ছে...')">🎰 Slots</div>
+        <div class="menu-card" onclick="alert('Fishing গেম লোড হচ্ছে...')">🦈 Fishing</div>
+        <div class="menu-card" onclick="alert('Sports গেম লোড হচ্ছে...')">⚽ Sports</div>
+    </div>
+
+    <div class="nav-bar">
+        <div>🏠 হোম</div>
+        <div>📊 অ্যাক্টিভিটি</div>
+        <div onclick="logOut()">👤 লগআউট</div>
     </div>
 </div>
 
-<div class="nav-bar">
-    <div>🏠 হোম</div>
-    <div>📊 অ্যাক্টিভিটি</div>
-    <div>👤 অ্যাকাউন্ট</div>
-</div>
-
 <script>
-    function processTransaction(type) {
-        const method = document.getElementById('method').value;
-        const amount = document.getElementById('amount').value;
-        
-        if(!amount) {
-            alert("অনুগ্রহ করে সঠিক পরিমাণ লিখুন!");
-            return;
-        }
-        
-        alert(type + " রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে!\nমেথড: " + method + "\nপরিমাণ: " + amount + "\nএডমিন শীঘ্রই চেক করবেন।");
-    }
-</script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyAmmkzOVL03j4G-R1sU-Rs-zVXFHvSRvz8",
+        authDomain: "my-new-project-39095.firebaseapp.com",
+        projectId: "my-new-project-39095",
+        storageBucket: "my-new-project-39095.firebasestorage.app",
+        messagingSenderId: "201479161493",
+        appId: "1:201479161493:web:257e6c0d130390f7033d9c"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
+    function logIn() { auth.signInWithEmailAndPassword(document.getElementById('email').value, document.getElementById('password').value).catch(e => alert(e.message)); }
+    function logOut() { auth.signOut().then(() => location.reload()); }
+
+    function processTransaction(type) {
+        const amount = document.getElementById('amount').value;
+        const method = document.getElementById('method').value;
+        if(amount) alert(type + " রিকোয়েস্ট (" + method + "): " + amount + " সফল!");
+    }
+
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            document.getElementById("auth-container").style.display = "none";
+            document.getElementById("main-content").style.display = "block";
+            db.collection("users").doc(user.uid).get().then((doc) => {
+                if (doc.exists) document.getElementById("display-balance").innerText = "৳ " + doc.data().balance;
+            });
+        }
+    });
+</script>
 </body>
 </html>
