@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>আমার গেমিং পোর্টাল</title>
+    <title>গেমিং পোর্টাল</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+
     <style>
         body { font-family: sans-serif; text-align: center; padding: 20px; background: #f4f4f4; }
         .container { background: white; padding: 20px; border-radius: 10px; max-width: 400px; margin: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
         button { padding: 10px 15px; margin: 5px; cursor: pointer; background: #28a745; color: white; border: none; border-radius: 5px; }
         .game-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
         .game-card { border: 1px solid #ddd; padding: 10px; border-radius: 8px; }
-        .wallet-actions { margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px; }
     </style>
 </head>
 <body>
@@ -26,13 +29,9 @@
     </div>
 
     <div id="profile-section" style="display:none;">
+        <h3>আপনার প্রোফাইল</h3>
         <div id="profile-info"></div>
-        
-        <div class="wallet-actions">
-            <button onclick="handleTransaction('ডিপোজিট')">ডিপোজিট</button>
-            <button onclick="handleTransaction('উইথড্র')">উইথড্র</button>
-        </div>
-        
+        <button onclick="saveScore()">স্কোর সেভ (+10)</button>
         <button onclick="logOut()">লগআউট</button>
 
         <div class="game-grid">
@@ -47,10 +46,6 @@
         </div>
     </div>
 </div>
-
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 
 <script>
     const firebaseConfig = {
@@ -70,19 +65,17 @@
     function logIn() { auth.signInWithEmailAndPassword(document.getElementById('email').value, document.getElementById('password').value).catch(e => alert(e.message)); }
     function logOut() { auth.signOut().then(() => location.reload()); }
 
-    // ডিপোজিট এবং উইথড্র রিকোয়েস্ট সিস্টেম
-    function handleTransaction(type) {
-        let amount = prompt(type + " করতে কত টাকা চান?");
-        if (amount) {
-            alert(type + " রিকোয়েস্ট পাঠানো হয়েছে: " + amount + " টাকা। এডমিন যাচাই করে ব্যালেন্স আপডেট করবেন।");
-            // ডাটাবেসে রিকোয়েস্টটি সেভ করার জন্য এখানে Firestore কোড যুক্ত করতে হবে
+    function saveScore() {
+        const user = auth.currentUser;
+        if(user) {
+            db.collection("users").doc(user.uid).update({
+                balance: firebase.firestore.FieldValue.increment(10)
+            }).then(() => location.reload());
         }
     }
 
-    // গেম খেলার ফাংশন
     function playGame(name) {
-        alert(name + " গেমটি চালু হচ্ছে... আপনার গেমিং আনন্দ উপভোগ করুন!");
-        // এখানে নির্দিষ্ট গেমের URL রিডাইরেক্ট কোড যুক্ত করা যাবে
+        alert(name + " গেমটি এখন লোড হচ্ছে...");
     }
 
     auth.onAuthStateChanged((user) => {
