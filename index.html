@@ -26,6 +26,18 @@
                 .then(data => alert(data))
                 .catch(err => alert("এরর হয়েছে: " + err));
         }
-    </script>
+    </script>function startGame() {
+        alert("ডাটাবেসে স্কোর পাঠানোর চেষ্টা করা হচ্ছে...");
+        
+        fetch('/save-score')
+            .then(response => response.text())
+            .then(data => {
+                alert("সার্ভার থেকে মেসেজ: " + data);
+            })
+            .catch(err => {
+                alert("এরর: সার্ভারের সাথে যোগাযোগ করা যাচ্ছে না। বিস্তারিত: " + err);
+            });
+    }
+</script>
 </body>
 </html>
