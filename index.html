@@ -89,5 +89,25 @@
             .then(() => alert("লগইন সফল!"))
             .catch(e => alert("এরর: " + e.message));
     }
-</script>
+</script>// User log-in korar por tar profile info fetch korar function
+function loadUserProfile(userId) {
+    db.collection("users").doc(userId).get().then((doc) => {
+        if (doc.exists) {
+            const userData = doc.data();
+            document.getElementById("profile-info").innerHTML = `
+                <p>Balance: ${userData.balance} TK</p>
+                <p>Email: ${userData.email}</p>
+            `;
+        }
+    });
+}
+
+// User-ke track korar jonno
+auth.onAuthStateChanged((user) => {
+    if (user) {
+        loadUserProfile(user.uid);
+    } else {
+        // User logout hoye gele login page dekhan
+    }
+});
 </html>
