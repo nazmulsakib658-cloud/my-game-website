@@ -61,5 +61,33 @@
         }
     </script>
 
-</body>
+</body><div id="auth-container">
+    <h2>লগইন / সাইনআপ</h2>
+    <input type="email" id="email" placeholder="ইমেইল">
+    <input type="password" id="password" placeholder="পাসওয়ার্ড">
+    <button onclick="signUp()">সাইনআপ</button>
+    <button onclick="logIn()">লগইন</button>
+</div>
+
+<script>
+    const auth = firebase.auth();
+
+    // সাইনআপ ফাংশন
+    function signUp() {
+        const email = document.getElementById('email').value;
+        const pass = document.getElementById('password').value;
+        auth.createUserWithEmailAndPassword(email, pass)
+            .then(() => alert("সাইনআপ সফল!"))
+            .catch(e => alert("এরর: " + e.message));
+    }
+
+    // লগইন ফাংশন
+    function logIn() {
+        const email = document.getElementById('email').value;
+        const pass = document.getElementById('password').value;
+        auth.signInWithEmailAndPassword(email, pass)
+            .then(() => alert("লগইন সফল!"))
+            .catch(e => alert("এরর: " + e.message));
+    }
+</script>
 </html>
