@@ -3,18 +3,18 @@ const { MongoClient } = require('mongodb');
 const app = express();
 const uri = process.env.MONGODB_URI;
 
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
-});
+app.use(express.static(__dirname)); // আপনার HTML ফাইলটি দেখানোর জন্য
 
-app.get('/test-db', async (req, res) => {
+app.get('/save-score', async (req, res) => {
     const client = new MongoClient(uri);
     try {
         await client.connect();
-        res.send("ডাটাবেসের সাথে কানেক্ট হয়েছে!");
+        const db = client.db('game_db'); // আপনার ডাটাবেস নাম
+        await db.collection('scores').insertOne({ score: 100, date: new Date() });
+        res.send("স্কোর সফলভাবে ডাটাবেসে সেভ হয়েছে!");
     } catch (e) {
-        res.send("কানেকশন এরর: " + e.message);
+        res.send("এরর: " + e.message);
     }
 });
 
-app.listen(3000, () => console.log('Server running on port 3000'));
+app.listen(3000, () => console.log('সার্ভার চালু হয়েছে'));
