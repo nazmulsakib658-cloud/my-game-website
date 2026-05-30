@@ -7,107 +7,95 @@
 
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 
     <style>
-        body {
-            font-family: sans-serif;
-            text-align: center;
-            padding: 50px;
-        }
-
-        button {
-            padding: 15px 30px;
-            font-size: 20px;
-            cursor: pointer;
-            background: #28a745;
-            color: white;
-            border: none;
-            border-radius: 8px;
-        }
+        body { font-family: sans-serif; text-align: center; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; cursor: pointer; }
+        #profile-section { margin-top: 20px; border: 1px solid #ccc; padding: 20px; display: none; }
     </style>
 </head>
 <body>
 
     <h1>আমার গেমিং পোর্টাল</h1>
 
-    <button onclick="saveScore()">স্কোর সেভ করুন</button>
+    <div id="auth-container">
+        <input type="email" id="email" placeholder="ইমেইল">
+        <input type="password" id="password" placeholder="পাসওয়ার্ড">
+        <br>
+        <button onclick="signUp()">সাইনআপ</button>
+        <button onclick="logIn()">লগইন</button>
+    </div>
+
+    <div id="profile-section">
+        <h3>আপনার প্রোফাইল</h3>
+        <div id="profile-info"></div>
+        <button onclick="saveScore()">স্কোর সেভ করুন</button>
+        <button onclick="logOut()">লগআউট</button>
+    </div>
 
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyAmmkzOVL03j4G-R1sU-Rs-zVXFHvSRvz8",
-            authDomain: "my-new-project-39095.firebaseapp.com",
-            projectId: "my-new-project-39095",
-            storageBucket: "my-new-project-39095.firebasestorage.app",
-            messagingSenderId: "201479161493",
-            appId: "1:201479161493:web:257e6c0d130390f7033d9c"
+            // এই অংশটুকু আপনার Firebase কনসোল থেকে কপি করে বসান
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_ID",
+            appId: "YOUR_ID"
         };
 
         firebase.initializeApp(firebaseConfig);
-
+        const auth = firebase.auth();
         const db = firebase.firestore();
 
-        async function saveScore() {
-            try {
-                await db.collection("scores").add({
-                    score: 100,
-                    date: new Date()
-                });
+        // সাইনআপ
+        function signUp() {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            auth.createUserWithEmailAndPassword(email, pass)
+                .then(() => alert("সাইনআপ সফল!"))
+                .catch(e => alert("এরর: " + e.message));
+        }
 
-                alert("সাফল্য! স্কোর ডাটাবেসে সেভ হয়েছে।");
+        // লগইন
+        function logIn() {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            auth.signInWithEmailAndPassword(email, pass)
+                .then(() => alert("লগইন সফল!"))
+                .catch(e => alert("এরর: " + e.message));
+        }
 
-            } catch (e) {
-                alert("এরর: " + e.message);
+        // লগআউট
+        function logOut() {
+            auth.signOut().then(() => location.reload());
+        }
+
+        // স্কোর সেভ
+        function saveScore() {
+            const user = auth.currentUser;
+            if(user) {
+                db.collection("users").doc(user.uid).update({
+                    balance: firebase.firestore.FieldValue.increment(10) // ১০ পয়েন্ট যোগ হবে
+                }).then(() => alert("স্কোর সেভ হয়েছে!"));
             }
         }
+
+        // ইউজার চেক
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                document.getElementById("auth-container").style.display = "none";
+                document.getElementById("profile-section").style.display = "block";
+                db.collection("users").doc(user.uid).get().then((doc) => {
+                    if (doc.exists) {
+                        document.getElementById("profile-info").innerHTML = `ইমেইল: ${user.email} <br> ব্যালেন্স: ${doc.data().balance} TK`;
+                    } else {
+                        db.collection("users").doc(user.uid).set({ email: user.email, balance: 0 });
+                    }
+                });
+            }
+        });
     </script>
-
-</body><div id="auth-container">
-    <h2>লগইন / সাইনআপ</h2>
-    <input type="email" id="email" placeholder="ইমেইল">
-    <input type="password" id="password" placeholder="পাসওয়ার্ড">
-    <button onclick="signUp()">সাইনআপ</button>
-    <button onclick="logIn()">লগইন</button>
-</div>
-
-<script>
-    const auth = firebase.auth();
-
-    // সাইনআপ ফাংশন
-    function signUp() {
-        const email = document.getElementById('email').value;
-        const pass = document.getElementById('password').value;
-        auth.createUserWithEmailAndPassword(email, pass)
-            .then(() => alert("সাইনআপ সফল!"))
-            .catch(e => alert("এরর: " + e.message));
-    }
-
-    // লগইন ফাংশন
-    function logIn() {
-        const email = document.getElementById('email').value;
-        const pass = document.getElementById('password').value;
-        auth.signInWithEmailAndPassword(email, pass)
-            .then(() => alert("লগইন সফল!"))
-            .catch(e => alert("এরর: " + e.message));
-    }
-</script>  //User log-in korar por tar profile info fetch korar function
-function loadUserProfile(userId) {
-    db.collection("users").doc(userId).get().then((doc) => {
-        if (doc.exists) {
-            const userData = doc.data();
-            document.getElementById("profile-info").innerHTML = `
-                <p>Balance: ${userData.balance} TK</p>
-                <p>Email: ${userData.email}</p>
-            `;
-        }
-    });
-}
-
-// User-ke track korar jonno
-auth.onAuthStateChanged((user) => {
-    if (user) {
-        loadUserProfile(user.uid);
-    } else {
-        // User logout hoye gele login page dekhan
-    }
-});
+</body>
 </html>
