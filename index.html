@@ -3,150 +3,242 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Snake Game</title>
+<title>গেমিং পোর্টাল</title>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 
 <style>
 body{
-    margin:0;
-    background:#111;
-    color:#fff;
-    font-family:Arial,sans-serif;
+    font-family:sans-serif;
+    background:#f4f4f4;
     text-align:center;
+    padding:20px;
 }
 
-h1{
+.container{
+    max-width:400px;
+    margin:auto;
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 0 10px rgba(0,0,0,.1);
+}
+
+input{
+    width:90%;
+    padding:10px;
+    margin:5px;
+}
+
+button{
+    width:90%;
+    padding:10px;
+    margin:5px;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+    background:#28a745;
+    color:white;
+}
+
+.logout{
+    background:#dc3545;
+}
+
+.game-grid{
+    display:grid;
+    gap:10px;
     margin-top:20px;
 }
 
-#score{
-    font-size:22px;
-    margin:10px;
-}
-
-canvas{
-    background:#000;
-    border:3px solid #0f0;
-    margin-top:10px;
+.game-card{
+    border:1px solid #ddd;
+    border-radius:8px;
+    padding:10px;
+    background:#fff;
 }
 </style>
 </head>
 <body>
 
-<h1>🐍 Snake Game</h1>
-<div id="score">Score: 0</div>
+<div class="container">
 
-<canvas id="game" width="400" height="400"></canvas>
+<h1>গেমিং পোর্টাল</h1>
+
+<div id="auth-container">
+
+<input type="email" id="email" placeholder="ইমেইল">
+
+<input type="password" id="password" placeholder="পাসওয়ার্ড">
+
+<button onclick="signUp()">সাইনআপ</button>
+
+<button onclick="logIn()">লগইন</button>
+
+</div>
+
+<div id="profile-section" style="display:none;">
+
+<div id="profile-info"></div>
+
+<button onclick="saveScore()">স্কোর সেভ (+10)</button>
+
+<button class="logout" onclick="logOut()">লগআউট</button>
+
+<div class="game-grid">
+
+<div class="game-card">
+<h3>Fortune Gems</h3>
+<button onclick="playGame()">Play</button>
+</div>
+
+</div>
+
+</div>
+
+</div>
 
 <script>
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
 
-const box = 20;
-
-let snake = [
-    {x: 10 * box, y: 10 * box}
-];
-
-let food = {
-    x: Math.floor(Math.random()*20)*box,
-    y: Math.floor(Math.random()*20)*box
+const firebaseConfig = {
+    apiKey: "AIzaSyAmmkzOVL03j4G-R1sU-Rs-zVXFHvSRvz8",
+    authDomain: "my-new-project-39095.firebaseapp.com",
+    projectId: "my-new-project-39095",
+    storageBucket: "my-new-project-39095.firebasestorage.app",
+    messagingSenderId: "201479161493",
+    appId: "1:201479161493:web:257e6c0d130390f7033d9c"
 };
 
-let score = 0;
+firebase.initializeApp(firebaseConfig);
 
-let direction = "RIGHT";
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-document.addEventListener("keydown", changeDirection);
+function signUp(){
 
-function changeDirection(event){
+    const email=document.getElementById("email").value;
+    const password=document.getElementById("password").value;
 
-    if(event.key === "ArrowLeft" && direction !== "RIGHT")
-        direction = "LEFT";
+    auth.createUserWithEmailAndPassword(email,password)
 
-    if(event.key === "ArrowUp" && direction !== "DOWN")
-        direction = "UP";
+    .then((cred)=>{
 
-    if(event.key === "ArrowRight" && direction !== "LEFT")
-        direction = "RIGHT";
+        return db.collection("users")
+        .doc(cred.user.uid)
+        .set({
+            email:email,
+            balance:0
+        });
 
-    if(event.key === "ArrowDown" && direction !== "UP")
-        direction = "DOWN";
+    })
+
+    .then(()=>{
+        alert("সাইনআপ সফল!");
+    })
+
+    .catch((e)=>{
+        alert(e.message);
+    });
 }
 
-function draw(){
+function logIn(){
 
-    ctx.fillStyle = "black";
-    ctx.fillRect(0,0,400,400);
+    const email=document.getElementById("email").value;
+    const password=document.getElementById("password").value;
 
-    for(let i=0;i<snake.length;i++){
+    auth.signInWithEmailAndPassword(email,password)
 
-        ctx.fillStyle = i===0 ? "lime" : "green";
-        ctx.fillRect(
-            snake[i].x,
-            snake[i].y,
-            box,
-            box
-        );
+    .then(()=>{
+        alert("লগইন সফল!");
+    })
+
+    .catch((e)=>{
+        alert(e.message);
+    });
+}
+
+function logOut(){
+
+    auth.signOut()
+
+    .then(()=>{
+        location.reload();
+    });
+
+}
+
+function saveScore(){
+
+    const user=auth.currentUser;
+
+    if(!user){
+        alert("আগে লগইন করুন");
+        return;
     }
 
-    ctx.fillStyle = "red";
-    ctx.fillRect(food.x, food.y, box, box);
+    db.collection("users")
+    .doc(user.uid)
+    .update({
+        balance: firebase.firestore.FieldValue.increment(10)
+    })
 
-    let headX = snake[0].x;
-    let headY = snake[0].y;
+    .then(()=>{
+        alert("+10 পয়েন্ট যোগ হয়েছে");
+        loadProfile(user);
+    })
 
-    if(direction==="LEFT") headX -= box;
-    if(direction==="UP") headY -= box;
-    if(direction==="RIGHT") headX += box;
-    if(direction==="DOWN") headY += box;
+    .catch((e)=>{
+        alert(e.message);
+    });
+}
 
-    if(headX===food.x && headY===food.y){
+function playGame(){
+    alert("Fortune Gems গেম এখনও যুক্ত করা হয়নি।");
+}
 
-        score++;
-        document.getElementById("score").innerText =
-        "Score: " + score;
+function loadProfile(user){
 
-        food = {
-            x: Math.floor(Math.random()*20)*box,
-            y: Math.floor(Math.random()*20)*box
-        };
+    db.collection("users")
+    .doc(user.uid)
+    .get()
+
+    .then((doc)=>{
+
+        if(doc.exists){
+
+            document.getElementById("profile-info").innerHTML=
+            `
+            <h3>প্রোফাইল</h3>
+            <p>${user.email}</p>
+            <h2>ব্যালেন্স: ${doc.data().balance} TK</h2>
+            `;
+
+        }
+
+    });
+
+}
+
+auth.onAuthStateChanged((user)=>{
+
+    if(user){
+
+        document.getElementById("auth-container").style.display="none";
+        document.getElementById("profile-section").style.display="block";
+
+        loadProfile(user);
 
     }else{
-        snake.pop();
+
+        document.getElementById("auth-container").style.display="block";
+        document.getElementById("profile-section").style.display="none";
+
     }
 
-    const newHead = {
-        x: headX,
-        y: headY
-    };
+});
 
-    if(
-        headX < 0 ||
-        headY < 0 ||
-        headX >= 400 ||
-        headY >= 400 ||
-        collision(newHead, snake)
-    ){
-        clearInterval(game);
-        alert("Game Over! Score: " + score);
-    }
-
-    snake.unshift(newHead);
-}
-
-function collision(head,array){
-
-    for(let i=0;i<array.length;i++){
-        if(head.x===array[i].x &&
-           head.y===array[i].y){
-            return true;
-        }
-    }
-
-    return false;
-}
-
-const game = setInterval(draw, 100);
 </script>
 
 </body>
