@@ -18,7 +18,13 @@
 
     <script>
         function startGame() {
-            alert("গেম শুরু হয়েছে! এখন আপনি এখানে আপনার গেমের কোড যোগ করতে পারবেন।");
+            alert("গেম শুরু হয়েছে! এখন ডাটাবেসে স্কোর পাঠানোর চেষ্টা করা হচ্ছে...");
+            
+            // এটি আপনার সার্ভারের /save-score রুটে রিকোয়েস্ট পাঠাবে
+            fetch('/save-score')
+                .then(response => response.text())
+                .then(data => alert(data))
+                .catch(err => alert("এরর হয়েছে: " + err));
         }
     </script>
 </body>
