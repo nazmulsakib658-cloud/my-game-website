@@ -3,248 +3,75 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>গেমিং পোর্টাল</title>
-
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<title>Gaming Portal</title>
 
 <style>
 body{
-    font-family:sans-serif;
-    background:#f4f4f4;
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#121212;
+    color:white;
     text-align:center;
+}
+
+.header{
     padding:20px;
+    background:#1f1f1f;
 }
 
-.container{
-    max-width:400px;
-    margin:auto;
-    background:white;
+.games{
+    display:flex;
+    justify-content:center;
+    padding:30px;
+}
+
+.card{
+    background:#222;
+    border-radius:15px;
     padding:20px;
-    border-radius:10px;
-    box-shadow:0 0 10px rgba(0,0,0,.1);
+    width:300px;
+    box-shadow:0 0 10px rgba(255,255,255,0.1);
 }
 
-input{
-    width:90%;
-    padding:10px;
-    margin:5px;
+.card h2{
+    margin-top:0;
 }
 
-button{
-    width:90%;
-    padding:10px;
-    margin:5px;
-    border:none;
-    border-radius:5px;
-    cursor:pointer;
+.play-btn{
     background:#28a745;
     color:white;
-}
-
-.logout{
-    background:#dc3545;
-}
-
-.game-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px;
-    margin-top:20px;
-}
-
-.game-card{
-    border:1px solid #ddd;
+    border:none;
+    padding:12px 25px;
     border-radius:8px;
-    padding:10px;
-    background:#fff;
+    cursor:pointer;
+    font-size:16px;
 }
 </style>
 </head>
 <body>
 
-<div class="container">
-
-<h1>গেমিং পোর্টাল</h1>
-
-<div id="auth-container">
-
-<input type="email" id="email" placeholder="ইমেইল">
-
-<input type="password" id="password" placeholder="পাসওয়ার্ড">
-
-<button onclick="signUp()">সাইনআপ</button>
-
-<button onclick="logIn()">লগইন</button>
-
+<div class="header">
+    <h1>Gaming Portal</h1>
 </div>
 
-<div id="profile-section" style="display:none;">
+<div class="games">
+    <div class="card">
+        <h2>JILI Super Ace</h2>
+        <p>Click Play to launch the game.</p>
 
-<div id="profile-info"></div>
-
-<button onclick="saveScore()">স্কোর সেভ (+10)</button>
-
-<button class="logout" onclick="logOut()">লগআউট</button>
-
-<div class="game-grid">
-
-<div class="game-card">
-<h3>Super Ace</h3>
-<button onclick="playGame('Super Ace')">Play</button>
-</div>
-
-<div class="game-card">
-<h3>Fortune Gems</h3>
-<button onclick="playGame('Fortune Gems')">Play</button>
-</div>
-
-</div>
-
-</div>
-
+        <button class="play-btn" onclick="launchGame()">
+            PLAY NOW
+        </button>
+    </div>
 </div>
 
 <script>
-
-const firebaseConfig = {
-    apiKey: "AIzaSyAmmkzOVL03j4G-R1sU-Rs-zVXFHvSRvz8",
-    authDomain: "my-new-project-39095.firebaseapp.com",
-    projectId: "my-new-project-39095",
-    storageBucket: "my-new-project-39095.firebasestorage.app",
-    messagingSenderId: "201479161493",
-    appId: "1:201479161493:web:257e6c0d130390f7033d9c"
-};
-
-firebase.initializeApp(firebaseConfig);
-
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-function signUp(){
-
-    const email=document.getElementById("email").value;
-    const password=document.getElementById("password").value;
-
-    auth.createUserWithEmailAndPassword(email,password)
-
-    .then((cred)=>{
-
-        return db.collection("users")
-        .doc(cred.user.uid)
-        .set({
-            email:email,
-            balance:0
-        });
-
-    })
-
-    .then(()=>{
-        alert("সাইনআপ সফল!");
-    })
-
-    .catch((e)=>{
-        alert(e.message);
-    });
+function launchGame() {
+    window.open(
+        "https://dkwin9.com/#/home/game?url=aHR0cHM6Ly93YmdhbWUuY216NTZrM3cuY29tL2Z1bGxob3VzZS8/c3NvS2V5PTFiYjEzMzVkMmU4ZmNhNmE5NDk1ZmVmOWIxMjMyMDViN2NlOThhMmEmbGFuZz1lbi1VUyZhcGlJZD0zMDc5JmJlPW1vYy53M2s2NXptYy5pcGFiZXdidyZkb21haW5fZ3M9dzNrNjV6bWMmZG9tYWluX3BsYXRmb3JtPW1vYy53M2s2NXptYy5tcm9mdGFscC10b2xzYncmZ2FtZUlEPTQ5JmdzPW1vYy53M2s2NXptYy5kZi10b2xzYncmbGVnYWxMYW5nPXRydWUmc2tpbj0w&vendorCode=JILI",
+        "_blank"
+    );
 }
-
-function logIn(){
-
-    const email=document.getElementById("email").value;
-    const password=document.getElementById("password").value;
-
-    auth.signInWithEmailAndPassword(email,password)
-
-    .then(()=>{
-        alert("লগইন সফল!");
-    })
-
-    .catch((e)=>{
-        alert(e.message);
-    });
-}
-
-function logOut(){
-
-    auth.signOut()
-
-    .then(()=>{
-        location.reload();
-    });
-
-}
-
-function saveScore(){
-
-    const user=auth.currentUser;
-
-    if(!user){
-        alert("আগে লগইন করুন");
-        return;
-    }
-
-    db.collection("users")
-    .doc(user.uid)
-    .update({
-        balance: firebase.firestore.FieldValue.increment(10)
-    })
-
-    .then(()=>{
-        alert("+10 পয়েন্ট যোগ হয়েছে");
-        loadProfile(user);
-    })
-
-    .catch((e)=>{
-        alert(e.message);
-    });
-}
-
-function playGame(name){
-    alert(name + " গেমটি এখন লোড হচ্ছে...");
-}
-
-function loadProfile(user){
-
-    db.collection("users")
-    .doc(user.uid)
-    .get()
-
-    .then((doc)=>{
-
-        if(doc.exists){
-
-            document.getElementById("profile-info").innerHTML=
-            `
-            <h3>প্রোফাইল</h3>
-            <p>${user.email}</p>
-            <h2>ব্যালেন্স: ${doc.data().balance} TK</h2>
-            `;
-
-        }
-
-    });
-
-}
-
-auth.onAuthStateChanged((user)=>{
-
-    if(user){
-
-        document.getElementById("auth-container").style.display="none";
-        document.getElementById("profile-section").style.display="block";
-
-        loadProfile(user);
-
-    }else{
-
-        document.getElementById("auth-container").style.display="block";
-        document.getElementById("profile-section").style.display="none";
-
-    }
-
-});
-
 </script>
 
 </body>
