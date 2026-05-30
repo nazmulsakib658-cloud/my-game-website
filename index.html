@@ -13,7 +13,13 @@
         body { font-family: sans-serif; text-align: center; padding: 20px; }
         button { padding: 10px 20px; margin: 10px; cursor: pointer; background: #28a745; color: white; border: none; border-radius: 5px; }
         #profile-section { margin-top: 20px; border: 1px solid #ccc; padding: 20px; display: none; }
-    </style>
+    </style 
+    /* নতুন স্টাইল */
+    .game-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
+    .game-card { background: #f8f9fa; padding: 10px; border-radius: 8px; border: 1px solid #ddd; }
+    .game-card img { width: 100%; border-radius: 5px; }
+</style>
+
 </head>
 <body>
 
@@ -94,6 +100,22 @@
                 });
             }
         });
-    </script>
-</body>
+    </script>function playGame(gameName) {
+    alert(gameName + " গেমটি এখন লোড হচ্ছে...");
+    // এখানে গেমের ইউআরএল বা গেমের আলাদা পেজ ওপেন করার কোড হবে
+}
+
+</body><div class="game-grid">
+    <div class="game-card">
+        <img src="https://via.placeholder.com/100" alt="Game">
+        <p>Super Ace</p>
+        <button onclick="playGame('Super Ace')">Play</button>
+    </div>
+    <div class="game-card">
+        <img src="https://via.placeholder.com/100" alt="Game">
+        <p>Fortune Gems</p>
+        <button onclick="playGame('Fortune Gems')">Play</button>
+    </div>
+</div>
+
 </html>
