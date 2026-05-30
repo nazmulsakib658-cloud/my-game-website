@@ -3,15 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>গেমিং পোর্টাল</title>
+    <title>আমার গেমিং পোর্টাল</title>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 20px; }
-        .game-card { border: 1px solid #ccc; padding: 15px; margin: 15px auto; border-radius: 8px; max-width: 300px; }
-        button { padding: 10px; margin: 5px; cursor: pointer; background: #28a745; color: white; border: none; border-radius: 5px; }
+        body { font-family: sans-serif; text-align: center; padding: 20px; background-color: #f4f4f4; }
+        .container { background: white; padding: 20px; border-radius: 10px; max-width: 500px; margin: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        button { padding: 10px 20px; margin: 10px; cursor: pointer; background: #28a745; color: white; border: none; border-radius: 5px; }
+        #profile-section { margin-top: 20px; display: none; }
+        .game-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .game-card { border: 1px solid #ddd; padding: 10px; border-radius: 8px; background: #fafafa; }
     </style>
 </head>
 <body>
 
+<div class="container">
     <h1>আমার গেমিং পোর্টাল</h1>
 
     <div id="auth-container">
@@ -21,29 +30,84 @@
         <button onclick="logIn()">লগইন</button>
     </div>
 
-    <div id="profile-section" style="display:none;">
+    <div id="profile-section">
         <h3>আপনার প্রোফাইল</h3>
         <div id="profile-info"></div>
-        <button onclick="saveScore()">ব্যালেন্স আপডেট</button>
+        <button onclick="saveScore()">স্কোর সেভ (+10)</button>
         <button onclick="logOut()">লগআউট</button>
 
-        <div class="game-card">
-            <p>Super Ace</p>
-            <button onclick="playGame('Super Ace')">Play</button>
-        </div>
-        <div class="game-card">
-            <p>Fortune Gems</p>
-            <button onclick="playGame('Fortune Gems')">Play</button>
+        <div class="game-grid">
+            <div class="game-card">
+                <p>Super Ace</p>
+                <button onclick="playGame('Super Ace')">Play</button>
+            </div>
+            <div class="game-card">
+                <p>Fortune Gems</p>
+                <button onclick="playGame('Fortune Gems')">Play</button>
+            </div>
         </div>
     </div>
+</div>
 
-    <script>
-        function playGame(gameName) {
-            alert(gameName + " গেমটি এখন লোড হচ্ছে...");
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyAmmkzOVL03j4G-R1sU-Rs-zVXFHvSRvz8",
+        authDomain: "my-new-project-39095.firebaseapp.com",
+        projectId: "my-new-project-39095",
+        storageBucket: "my-new-project-39095.firebasestorage.app",
+        messagingSenderId: "201479161493",
+        appId: "1:201479161493:web:257e6c0d130390f7033d9c"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    function signUp() {
+        const email = document.getElementById('email').value;
+        const pass = document.getElementById('password').value;
+        auth.createUserWithEmailAndPassword(email, pass)
+            .then(() => alert("সাইনআপ সফল!"))
+            .catch(e => alert("এরর: " + e.message));
+    }
+
+    function logIn() {
+        const email = document.getElementById('email').value;
+        const pass = document.getElementById('password').value;
+        auth.signInWithEmailAndPassword(email, pass)
+            .then(() => alert("লগইন সফল!"))
+            .catch(e => alert("এরর: " + e.message));
+    }
+
+    function logOut() { auth.signOut().then(() => location.reload()); }
+
+    function saveScore() {
+        const user = auth.currentUser;
+        if(user) {
+            db.collection("users").doc(user.uid).update({
+                balance: firebase.firestore.FieldValue.increment(10)
+            }).then(() => { alert("স্কোর সেভ হয়েছে!"); location.reload(); });
         }
+    }
 
-        // বাকি আপনার আগের ফাংশনগুলো (signUp, logIn, saveScore, logOut) এখানে বসান
-        // নিশ্চিত করবেন যে এগুলো যেন অবশ্যই <script> ট্যাগের ভেতরে থাকে!
-    </script>
+    // গেম খেলার ফাংশন
+    function playGame(gameName) {
+        alert(gameName + " গেমটি এখন লোড হচ্ছে...");
+    }
+
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            document.getElementById("auth-container").style.display = "none";
+            document.getElementById("profile-section").style.display = "block";
+            db.collection("users").doc(user.uid).get().then((doc) => {
+                if (doc.exists) {
+                    document.getElementById("profile-info").innerHTML = `ইমেইল: ${user.email} <br> ব্যালেন্স: ${doc.data().balance} TK`;
+                } else {
+                    db.collection("users").doc(user.uid).set({ email: user.email, balance: 0 });
+                }
+            });
+        }
+    });
+</script>
 </body>
 </html>
