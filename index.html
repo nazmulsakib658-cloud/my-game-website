@@ -1,31 +1,26 @@
-<!DOCTYPE html>
-<html lang="bn">
-<head>
-    <meta charset="UTF-8">
-    <title>আমার গেমিং পোর্টাল</title>
-</head>
-<body>
-    <h1>আমার গেমিং পোর্টাল</h1>
-    <button onclick="saveScore()">স্কোর সেভ করুন</button>
+<button onclick="saveScore()">স্কোর সেভ করুন</button>
 
-    <script>
-        async function saveScore() {
-            const url = "https://data.mongodb-api.com/app/YOUR_APP_ID/endpoint/data/v1/action/insertOne";
-            const apiKey = "YOUR_API_KEY";
+<script>
+    async function saveScore() {
+        // নিচের লিঙ্কটিতে আপনার MongoDB Atlas-এর Data API Endpoint বসান
+        const url = "https://ap-south-1.aws.data.mongodb-api.com/app/your-app-id/endpoint/data/v1/action/insertOne";
+        const apiKey = "আপনার-API-KEY-এখানে-বসানো";
 
-            const response = await fetch(url, {
-                method: "POST",
-                headers: { "api-key": apiKey, "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    dataSource: "Cluster0",
-                    database: "game_db",
-                    collection: "scores",
-                    document: { score: 100, date: new Date() }
-                })
-            });
-            
-            alert("স্কোর পাঠানো হয়েছে!");
-        }
-    </script>
-</body>
-</html>
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "api-key": apiKey,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                "dataSource": "Cluster0", // আপনার ক্লাস্টারের নাম
+                "database": "game_db",
+                "collection": "scores",
+                "document": { "score": 100, "date": new Date() }
+            })
+        });
+
+        const result = await response.json();
+        alert("ডাটাবেসের উত্তর: " + JSON.stringify(result));
+    }
+</script>
