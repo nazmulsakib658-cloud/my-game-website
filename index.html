@@ -2,38 +2,41 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>গেমিং পোর্টাল</title>
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 20px; }
+        body { font-family: sans-serif; text-align: center; padding: 20px; background: #f4f4f4; }
+        .box { background: white; padding: 20px; border-radius: 10px; max-width: 400px; margin: auto; }
         .game-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-        .game-card { border: 1px solid #ccc; padding: 10px; border-radius: 8px; }
-        button { padding: 10px; margin: 5px; cursor: pointer; }
+        .game-card { border: 1px solid #ddd; padding: 10px; border-radius: 8px; }
+        button { padding: 10px; margin: 5px; cursor: pointer; background: #28a745; color: white; border: none; border-radius: 5px; }
     </style>
 </head>
 <body>
 
-    <h1>আমার গেমিং পোর্টাল</h1>
+    <div class="box">
+        <h1>গেমিং পোর্টাল</h1>
+        <div id="auth-container">
+            <input type="email" id="email" placeholder="ইমেইল"><br>
+            <input type="password" id="password" placeholder="পাসওয়ার্ড"><br>
+            <button onclick="signUp()">সাইনআপ</button>
+            <button onclick="logIn()">লগইন</button>
+        </div>
 
-    <div id="auth-container">
-        <input type="email" id="email" placeholder="ইমেইল"><br>
-        <input type="password" id="password" placeholder="পাসওয়ার্ড"><br>
-        <button onclick="signUp()">সাইনআপ</button>
-        <button onclick="logIn()">লগইন</button>
-    </div>
+        <div id="profile-section" style="display:none;">
+            <div id="profile-info"></div>
+            <button onclick="saveScore()">ব্যালেন্স আপডেট</button>
+            <button onclick="logOut()">লগআউট</button>
 
-    <div id="profile-section" style="display:none;">
-        <div id="profile-info"></div>
-        <button onclick="saveScore()">ব্যালেন্স আপডেট (+10)</button>
-        <button onclick="logOut()">লগআউট</button>
-
-        <div class="game-grid">
-            <div class="game-card">
-                <p>Super Ace</p>
-                <button onclick="playGame('Super Ace')">Play</button>
-            </div>
-            <div class="game-card">
-                <p>Fortune Gems</p>
-                <button onclick="playGame('Fortune Gems')">Play</button>
+            <div class="game-grid">
+                <div class="game-card">
+                    <p>Super Ace</p>
+                    <button onclick="playGame('Super Ace')">Play</button>
+                </div>
+                <div class="game-card">
+                    <p>Fortune Gems</p>
+                    <button onclick="playGame('Fortune Gems')">Play</button>
+                </div>
             </div>
         </div>
     </div>
