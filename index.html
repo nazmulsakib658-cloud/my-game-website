@@ -2,41 +2,64 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>আমার গেমিং পোর্টাল</title>
+
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 20px;
+            cursor: pointer;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+        }
+    </style>
 </head>
 <body>
 
     <h1>আমার গেমিং পোর্টাল</h1>
+
     <button onclick="saveScore()">স্কোর সেভ করুন</button>
 
     <script>
-        // আপনার Firebase কনসোল থেকে পাওয়া কনফিগ এখানে বসান
         const firebaseConfig = {
             apiKey: "AIzaSyAmmkzOVL03j4G-R1sU-Rs-zVXFHvSRvz8",
             authDomain: "my-new-project-39095.firebaseapp.com",
             projectId: "my-new-project-39095",
-            storageBucket: ""my-new-project-39095.firebasestorage.app",
+            storageBucket: "my-new-project-39095.firebasestorage.app",
             messagingSenderId: "201479161493",
-            appId: "1:201479161493:web:257e6c0d130390f7033d9c",
+            appId: "1:201479161493:web:257e6c0d130390f7033d9c"
         };
 
         firebase.initializeApp(firebaseConfig);
+
         const db = firebase.firestore();
 
         async function saveScore() {
             try {
-                // ডাটাবেসে স্কোর সেভ করা হচ্ছে
                 await db.collection("scores").add({
-                    score: 100, // এখানে আপনার গেমের স্কোরটি থাকবে
+                    score: 100,
                     date: new Date()
                 });
-                alert("স্কোর সেভ হয়েছে!");
+
+                alert("সাফল্য! স্কোর ডাটাবেসে সেভ হয়েছে।");
+
             } catch (e) {
-                alert("এরর হয়েছে: " + e.message);
+                alert("এরর: " + e.message);
             }
         }
     </script>
+
 </body>
 </html>
