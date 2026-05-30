@@ -1,4 +1,5 @@
-const express = require('express');
+// আপনার index.js ফাইলের শুরুতে এই লাইনটি দিন
+app.use(express.static(__dirname)); express = require('express');
 const { MongoClient } = require('mongodb');
 const app = express();
 const uri = process.env.MONGODB_URI;
