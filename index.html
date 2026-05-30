@@ -11,28 +11,31 @@
     <style>
         body { font-family: sans-serif; text-align: center; padding: 20px; background: #f4f4f4; }
         .container { background: white; padding: 20px; border-radius: 10px; max-width: 400px; margin: auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        button { padding: 10px 15px; margin: 5px; cursor: pointer; background: #28a745; color: white; border: none; border-radius: 5px; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; background: #28a745; color: white; border: none; border-radius: 5px; width: 90%; }
         .game-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-        .game-card { border: 1px solid #ddd; padding: 10px; border-radius: 8px; }
+        .game-card { border: 1px solid #ddd; padding: 10px; border-radius: 8px; background: #fff; }
+        .wallet-actions { margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>আমার গেমিং পোর্টাল</h1>
+    <h1>গেমিং পোর্টাল</h1>
 
     <div id="auth-container">
-        <input type="email" id="email" placeholder="ইমেইল"><br>
-        <input type="password" id="password" placeholder="পাসওয়ার্ড"><br>
+        <input type="email" id="email" placeholder="ইমেইল" style="padding:10px; width:80%; margin:5px;"><br>
+        <input type="password" id="password" placeholder="পাসওয়ার্ড" style="padding:10px; width:80%; margin:5px;"><br>
         <button onclick="signUp()">সাইনআপ</button>
         <button onclick="logIn()">লগইন</button>
     </div>
 
     <div id="profile-section" style="display:none;">
-        <h3>আপনার প্রোফাইল</h3>
         <div id="profile-info"></div>
-        <button onclick="saveScore()">স্কোর সেভ (+10)</button>
-        <button onclick="logOut()">লগআউট</button>
+        <div class="wallet-actions">
+            <button onclick="handleTransaction('ডিপোজিট')">ডিপোজিট</button>
+            <button onclick="handleTransaction('উইথড্র')">উইথড্র</button>
+        </div>
+        <button onclick="logOut()" style="background:#dc3545;">লগআউট</button>
 
         <div class="game-grid">
             <div class="game-card">
@@ -65,13 +68,9 @@
     function logIn() { auth.signInWithEmailAndPassword(document.getElementById('email').value, document.getElementById('password').value).catch(e => alert(e.message)); }
     function logOut() { auth.signOut().then(() => location.reload()); }
 
-    function saveScore() {
-        const user = auth.currentUser;
-        if(user) {
-            db.collection("users").doc(user.uid).update({
-                balance: firebase.firestore.FieldValue.increment(10)
-            }).then(() => location.reload());
-        }
+    function handleTransaction(type) {
+        let amount = prompt(type + " করতে কত টাকা চান?");
+        if (amount) alert(type + " রিকোয়েস্ট পাঠানো হয়েছে: " + amount + " টাকা।");
     }
 
     function playGame(name) {
