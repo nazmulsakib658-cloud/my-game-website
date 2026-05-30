@@ -1,51 +1,42 @@
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <title>আমার গেমিং পোর্টাল</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
 
-<script>
-  // // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+    <h1>আমার গেমিং পোর্টাল</h1>
+    <button onclick="saveScore()">স্কোর সেভ করুন</button>
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyAmmkzOVL03j4G-R1sU-Rs-zVXFHvSRvz8",
-  authDomain: "my-new-project-39095.firebaseapp.com",
-  projectId: "my-new-project-39095",
-  storageBucket: "my-new-project-39095.firebasestorage.app",
-  messagingSenderId: "201479161493",
-  appId: "1:201479161493:web:257e6c0d130390f7033d9c",
-  measurementId: "G-GYYL4F27R1"
-};
+    <script>
+        // আপনার Firebase কনসোল থেকে পাওয়া কনফিগ এখানে বসান
+        const firebaseConfig = {
+            apiKey: "AIzaSyAmmkzOVL03j4G-R1sU-Rs-zVXFHvSRvz8",
+            authDomain: "my-new-project-39095.firebaseapp.com",
+            projectId: "my-new-project-39095",
+            storageBucket: ""my-new-project-39095.firebasestorage.app",
+            messagingSenderId: "201479161493",
+            appId: "1:201479161493:web:257e6c0d130390f7033d9c",
+        };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-  const firebaseConfig = {
-    apiKey: "AIza...",
-    authDomain: "...",
-    projectId: "...",
-    storageBucket: "...",
-    messagingSenderId: "...",
-    appId: "..."
-  };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-
-  async function saveScore() {
-    try {
-      await db.collection("scores").add({
-        score: 100, // এখানে আপনার গেমের স্কোর ভেরিয়েবলটি দিন
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      alert("স্কোর সেভ হয়েছে!");
-    } catch (e) {
-      alert("এরর: " + e.message);
-    }
-  }
-</script>
-
-<button onclick="saveScore()">স্কোর সেভ করুন</button>
+        async function saveScore() {
+            try {
+                // ডাটাবেসে স্কোর সেভ করা হচ্ছে
+                await db.collection("scores").add({
+                    score: 100, // এখানে আপনার গেমের স্কোরটি থাকবে
+                    date: new Date()
+                });
+                alert("স্কোর সেভ হয়েছে!");
+            } catch (e) {
+                alert("এরর হয়েছে: " + e.message);
+            }
+        }
+    </script>
+</body>
+</html>
